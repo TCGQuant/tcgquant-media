@@ -6,9 +6,13 @@
   "slot": "mover",
   "time": "15:00",
   "key": "op13-bb",
-  "status": "scheduled-by-hand",
+  "status": "posted",
   "poll": null,
-  "threads": null
+  "threads": null,
+  "urls": {
+   "x": "https://x.com/GetTCGQuant/status/2125711161249173843",
+   "threads": "https://www.threads.com/@tcgquant/post/DgLjYo6DFNQ"
+  }
  },
  {
   "img": "2-charizard.jpg",
@@ -17,9 +21,10 @@
   "slot": "card",
   "time": "17:00",
   "key": "151-charizard-ex-sir",
-  "status": "scheduled-by-hand",
+  "status": "scheduled-upload-post",
   "poll": null,
-  "threads": null
+  "threads": null,
+  "upload_post_job": "06ac1a8063524cb7a4db789c0a498a32"
  },
  {
   "img": "3-hfupc.jpg",
@@ -28,9 +33,10 @@
   "slot": "value",
   "time": "19:00",
   "key": "hf-upc",
-  "status": "scheduled-by-hand",
+  "status": "scheduled-upload-post",
   "poll": null,
-  "threads": null
+  "threads": null,
+  "upload_post_job": "03a356a4073d4b8ca26d2c3cfe52237e"
  },
  {
   "img": null,
@@ -39,9 +45,10 @@
   "slot": "hottake",
   "time": "21:00",
   "key": "oldmodern",
-  "status": "scheduled-by-hand",
+  "status": "scheduled-upload-post",
   "poll": null,
-  "threads": null
+  "threads": null,
+  "upload_post_job": "f2ab4f1a2f674b63b9e62ea2d8cb2010"
  },
  {
   "img": null,
@@ -55,7 +62,8 @@
   "slot": "engage",
   "time": "23:00",
   "key": "prismatic-pc-etb",
-  "status": "scheduled-by-hand",
-  "threads": "Prismatic Evolutions Pokémon Center ETBs fell 8.4% this week, from $362.69 to $332.14. MSRP was $60.\n\nAt $332, are you buying, waiting for lower, or passing? 👇"
+  "status": "scheduled-upload-post",
+  "threads": "Prismatic Evolutions Pokémon Center ETBs fell 8.4% this week, from $362.69 to $332.14. MSRP was $60.\n\nAt $332, are you buying, waiting for lower, or passing? 👇",
+  "upload_post_job": "7fbeeefb51e848ebaef5045d580b77d5"
  }
 ]
