@@ -3,55 +3,26 @@ import sys, math
 from common import *
 
 CARDS_ = [
-    dict(pid=642553, name="Volcarona", tag="Black Bolt · 100/086", era="SV", year="2025", sl1="POKEMON SV BLACK BOLT", sl2="VOLCARONA #100", raw=47.57, psa=2125.00, g10=21, tot=551),
-    dict(pid=157675, name="Giratina Prism Star", tag="Ultra Prism · 58/156", era="SM", year="2018", sl1="POKEMON SM ULTRA PRISM", sl2="GIRATINA PRISM STAR #58", raw=88.55, psa=4124.99, g10=103, tot=615),
-    dict(pid=124026, name="Charizard", tag="Evolutions · 11/108", era="XY", year="2016", sl1="POKEMON XY EVOLUTIONS", sl2="CHARIZARD HOLO #11", raw=91.30, psa=6856.00, g10=600, tot=54233),
-    dict(pid=91238, name="Charizard EX (Full Art)", tag="Flashfire · 100/106", era="XY", year="2014", sl1="POKEMON XY FLASHFIRE", sl2="CHARIZARD EX FULL ART #100", raw=298.20, psa=25650.00, g10=184, tot=4343),
-    dict(pid=94683, name="Gengar EX (Full Art)", tag="Phantom Forces · 114/119", era="XY", year="2014", sl1="POKEMON XY PHANTOM FORCES", sl2="GENGAR EX FULL ART #114", raw=828.92, psa=73857.78, g10=86, tot=6134),
+    dict(pid=642553, l1="2025 POKEMON SV BLACK BOLT", l2="VOLCARONA", num="100", name="Volcarona", tag="Black Bolt · 100/086", era="SV", year="2025", sl1="POKEMON SV BLACK BOLT", sl2="VOLCARONA #100", raw=47.57, psa=2125.00, g10=21, tot=551),
+    dict(pid=157675, l1="2018 POKEMON SM ULTRA PRISM", l2="GIRATINA PRISM STAR", num="58", name="Giratina Prism Star", tag="Ultra Prism · 58/156", era="SM", year="2018", sl1="POKEMON SM ULTRA PRISM", sl2="GIRATINA PRISM STAR #58", raw=88.55, psa=4124.99, g10=103, tot=615),
+    dict(pid=124026, l1="2016 POKEMON XY EVOLUTIONS", l2="CHARIZARD-HOLO", num="11", name="Charizard", tag="Evolutions · 11/108", era="XY", year="2016", sl1="POKEMON XY EVOLUTIONS", sl2="CHARIZARD HOLO #11", raw=91.30, psa=6856.00, g10=600, tot=54233),
+    dict(pid=91238, l1="2014 POKEMON XY FLASHFIRE", l2="FA/CHARIZARD EX", num="100", name="Charizard EX (Full Art)", tag="Flashfire · 100/106", era="XY", year="2014", sl1="POKEMON XY FLASHFIRE", sl2="CHARIZARD EX FULL ART #100", raw=298.20, psa=25650.00, g10=184, tot=4343),
+    dict(pid=94683, l1="2014 POKEMON XY PHANTOM FORCES", l2="FA/GENGAR EX", num="114", name="Gengar EX (Full Art)", tag="Phantom Forces · 114/119", era="XY", year="2014", sl1="POKEMON XY PHANTOM FORCES", sl2="GENGAR EX FULL ART #114", raw=828.92, psa=73857.78, g10=86, tot=6134),
 ]
 HOOK, XF, SEG, FIN, END = 2.6, 0.35, 4.4, 6.4, 3.8
-CWID, CHT = 404, 564
-SW = 460; LAB = 112; STOP = 420
-SH = 16 + LAB + 14 + CHT + 20
+CWID, CHT = 374, 523
+SW = 480; SH = round(1981 * SW / 1170); STOP = 395
+CARD_TOP = STOP + round(550 * SW / 1170)
 RX, SX = 275, 805
-CARD_TOP = STOP + 16 + LAB + 14
+YS = 35  # text block shift for the taller slab
+sys.path.insert(0, "/home/claude/newreels/slab"); import psaslab
 
 def big(v): return f"${v:,.0f}" if v >= 1000 else f"${v:,.2f}"
 
 def make_slab(c, card):
-    im = Image.new("RGBA", (SW, SH), (0, 0, 0, 0)); d = ImageDraw.Draw(im)
-    d.rounded_rectangle((0, 0, SW - 1, SH - 1), 14, fill=(228, 233, 240, 185), outline=(250, 252, 255, 235), width=4)
-    d.rounded_rectangle((7, 7, SW - 8, SH - 8), 10, outline=(255, 255, 255, 80), width=2)
-    # PSA-style label: white label, red frame, black text (plain "PSA" text, not their logo artwork)
-    RED_ = (200, 30, 42); INK = (18, 18, 20)
-    d.rectangle((14, 14, SW - 15, 16 + LAB), fill=(246, 246, 246, 255))
-    d.rectangle((20, 20, SW - 21, 10 + LAB), outline=RED_ + (255,), width=5)
-    def fit(txt, kind, sz, maxw):
-        while d.textlength(txt, font=font(kind, sz)) > maxw and sz > 11: sz -= 1
-        return font(kind, sz)
-    L = 34; R_ = SW - 34
-    l1 = f"{c['year']} {c['sl1']}"; f1 = fit(l1, "Bold", 18, SW - 170); d.text((L, 30), l1, font=f1, fill=INK)
-    nm, num = c["sl2"].rsplit(" #", 1)
-    f2 = fit(nm, "Bold", 18, SW - 200); d.text((L, 54), nm, font=f2, fill=INK)
-    fn = font("Bold", 18); t = "#" + num; d.text((R_ - d.textlength(t, font=fn), 30), t, font=fn, fill=INK)
-    fg = font("ExtraBold", 21); t = "GEM MT 10"; d.text((R_ - d.textlength(t, font=fg), 54), t, font=fg, fill=INK)
-    fp = font("ExtraBold", 22); d.text((R_ - d.textlength("PSA", font=fp), 82), "PSA", font=fp, fill=RED_)
-    # barcode-style stripes (no cert number)
-    import random; rnd = random.Random(c["pid"]); x = L
-    while x < L + 190:
-        w_ = rnd.choice((1, 1, 2, 3)); d.rectangle((x, 84, x + w_ - 1, 102), fill=INK); x += w_ + rnd.choice((1, 2, 2, 3))
-    # card well
-    wx, wy = (SW - CWID) // 2, 16 + LAB + 14
-    d.rounded_rectangle((wx - 7, wy - 7, wx + CWID + 6, wy + CHT + 6), 8, fill=(240, 243, 248, 200), outline=(255, 255, 255, 160), width=2)
-    im.alpha_composite(card, (wx, wy))
-    # glare stripe
-    gl = Image.new("RGBA", (SW, SH), (0, 0, 0, 0)); gd = ImageDraw.Draw(gl)
-    gd.polygon([(SW * 0.55, 0), (SW * 0.78, 0), (SW * 0.30, SH), (SW * 0.07, SH)], fill=(255, 255, 255, 34))
-    gl = gl.filter(ImageFilter.GaussianBlur(14))
-    m = Image.new("L", (SW, SH), 0); ImageDraw.Draw(m).rounded_rectangle((0, 0, SW - 1, SH - 1), 22, fill=255)
-    gl.putalpha(Image.fromarray(np.minimum(np.array(gl.getchannel("A")), np.array(m))))
-    im.alpha_composite(gl)
-    return im
+    """Grayson's own PSA 10 slab photo with this card swapped in and the label rewritten (his barcode and cert kept, as he asked)."""
+    full = psaslab.build(card_img(c["pid"], hi=True), c["l1"], c["l2"], "", c["num"], seed=c["pid"])
+    return full.resize((SW, SH), Image.LANCZOS)
 
 class RVP:
     def __init__(s):
@@ -92,10 +63,10 @@ class RVP:
             d.rounded_rectangle((SX - SW / 2, STOP, SX + SW / 2, STOP + SH), 22, outline=(255, 255, 255, 255), width=3)
             q = skew_text("?", font("anton", 220), (235, 240, 248)); shadow_paste(img, q, SX - q.width / 2, STOP + SH / 2 - q.height / 2, blur=10)
         # name
-        nm = fit_text(c["name"], "Bold", 1000, 46, WHITE); shadow_paste(img, nm, (W - nm.width) // 2, 1180, blur=6, dy=3)
-        ctext(d, c["tag"], font("Medium", 29), 1240, (200, 208, 222))
+        nm = fit_text(c["name"], "Bold", 1000, 46, WHITE); shadow_paste(img, nm, (W - nm.width) // 2, 1180 + YS, blur=6, dy=3)
+        ctext(d, c["tag"], font("Medium", 29), 1240 + YS, (200, 208, 222))
         # prices
-        y = 1292
+        y = 1292 + YS
         rp = fit_text(money(c["raw"]), "anton", 470, 84, WHITE, stroke=2); ra = int(255 * eout((t - 0.3) / 0.3))
         rp.putalpha(rp.getchannel("A").point(lambda v: v * ra // 255)); shadow_paste(img, rp, RX - rp.width / 2, y, blur=10, dy=5, alpha=ra * 200 // 255)
         ar = skew_text("→", font("anton", 80), GREEN); img.alpha_composite(ar, (W // 2 - ar.width // 2, y + 8))
@@ -115,11 +86,11 @@ class RVP:
             row = row.resize((int(row.width * sc), int(row.height * sc)), Image.LANCZOS)
             if row.width > 1000: row = row.resize((1000, int(row.height * 1000 / row.width)), Image.LANCZOS)
             row.putalpha(row.getchannel("A").point(lambda v: int(v * u)))
-            shadow_paste(img, row, (W - row.width) // 2, 1450 - (row.height - hh) // 2, blur=10, dy=5, alpha=int(200 * u))
+            shadow_paste(img, row, (W - row.width) // 2, 1450 + YS - (row.height - hh) // 2, blur=10, dy=5, alpha=int(200 * u))
         if t >= st:
             a = int(255 * eout((t - st) / 0.3))
             line = f"Only {c['g10']:,} PSA 10s out of {c['tot']:,} graded ({c['g10'] / c['tot'] * 100:.1f}%)"
-            ctext(d, line, font("SemiBold", 32), 1610, (225, 231, 242, a))
+            ctext(d, line, font("SemiBold", 32), 1610 + YS, (225, 231, 242, a))
         ctext(d, "TCGQuant.com", font("Bold", 38), 1760, GREEN)
         return img
 
