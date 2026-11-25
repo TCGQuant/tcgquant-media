@@ -39,9 +39,12 @@ Upload-Post profile: `TCGQuant`. Platforms: `["x", "threads"]`. Threads topic ta
 
 ## Build run: steps
 1. Attach the repo (add_repo TCGQuant/tcgquant-media, push) and clone it.
-2. Read `automation/posted_log.md` (last 14 days) and `automation/hot_takes.md`.
+2. If `textposts/<today PT>/posts.json` already exists, stop quietly (today's batch is done).
+   Read `automation/posted_log.md` (last 14 days) and `automation/hot_takes.md`. Also memory_read `/areas/grayson-market-views.md`
+   (kept current every Sunday from his new videos): a newer view there replaces an older one in hot_takes.md, and new views can be used
+   as hot takes (add them to hot_takes.md first).
 3. Data: use the built-in browser pane on Grayson's computer (`mcp__remote-devices__Claude_Browser__*`).
-   Open/reuse a tab on `https://tcgquant-staging.netlify.app/dashboard`. Wait until `window.ALL_DATASETS`, `window.METRICS_HISTORY`,
+   Open/reuse a tab on `https://tcgquant-staging.netlify.app/dashboard` (fallback: `https://tcgquant.com/dashboard`). Wait until `window.ALL_DATASETS`, `window.METRICS_HISTORY`,
    `window.PF_CATALOG`, `window.CARD_POPS` exist. If the page says "Your session has expired", or the computer cannot be reached,
    STOP: post nothing, and send Grayson one message saying today's text posts were skipped and why (log in / turn PC on).
    Useful globals:
