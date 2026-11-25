@@ -1,7 +1,7 @@
 # TCG Quant daily X + Threads posts: playbook
 
 Grayson approved these posts as **fully automatic** (Nov 25, 2026). Five posts a day, the **same post on X and Threads**,
-at **3, 5, 7, 9 and 11 PM Pacific (America/Vancouver)**. Visuals (price chart, product or card photo) when they help.
+at **3, 5, 7, 9 and 11 PM Pacific (America/Vancouver)**. Visuals: **about 40% of posts carry an image (2 of the 5 each day on average)**, card posts first (Grayson, Nov 25, 2026).
 
 Two scheduled runs use this file:
 - **Build run** (about 2:20 PM PT, needs Grayson's PC): pulls TCG Quant data, writes the 5 posts and visuals into
@@ -31,11 +31,14 @@ Upload-Post profile: `TCGQuant`. Platforms: `["x", "threads"]`. Threads topic ta
 ## The five slots
 | Time (PT) | Slot | What | Visual |
 |---|---|---|---|
-| 3 PM | mover | Biggest 7-day sealed price move (up or down) from METRICS_HISTORY, before → after, % | price chart (12 months) |
-| 5 PM | card | Card stat: PSA 10 pop / gem rate from CARD_POPS, or a card's 12-month climb/crash | card photo card |
-| 7 PM | value | Price vs MSRP, price a year ago vs now, or pack EV vs pack price | product photo card or chart |
-| 9 PM | hottake | Grayson's hot take (hot_takes.md), paired with one current number | usually none |
+| 3 PM | mover | Biggest 7-day sealed price move (up or down) from METRICS_HISTORY, before → after, % | price chart on alternate days |
+| 5 PM | card | Card stat: PSA 10 pop / gem rate from CARD_POPS, or a card's 12-month climb/crash | **always** a card photo card |
+| 7 PM | value | Price vs MSRP, price a year ago vs now, or pack EV vs pack price | product photo on the days the mover has none |
+| 9 PM | hottake | Grayson's hot take (hot_takes.md), paired with one current number | none |
 | 11 PM | engage | Data-backed question. On X use a poll: `xPollOptions` (2 to 4), `xPollDuration` 1440; Threads gets the question as text (`threadsTitle`) | none |
+
+Image rule: exactly 2 images a day = 40%. The card post always has one; the second goes to the mover (chart) or the
+value post (photo), alternating day to day (check yesterday's posts.json). Everything else is text only.
 
 ## Build run: steps
 1. Attach the repo (add_repo TCGQuant/tcgquant-media, push) and clone it.

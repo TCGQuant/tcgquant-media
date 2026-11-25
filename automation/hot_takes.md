@@ -5,7 +5,7 @@ Keep his meaning exactly. Pair each with one current number. Mark `used: YYYY-MM
 New takes from his daily answers are added at the top.
 
 ## Daily answers (newest first)
-(none yet)
+- [op13-385] (Nov 25, 2026, in chat) "OP-13 looks even better at $385. The set hasn't changed and still holds iconic cards people will want to chase for years to come." | data: OP-13 box price now (was $385.99 on Nov 24) | replaces the older [op13] price level
 
 ## From his videos
 - [oldmodern] Old-modern sealed (XY, Sun & Moon) has dominated the past year; many products are up 100%+. | used: 2026-11-25
