@@ -29,7 +29,7 @@ def bottom_fade():
             u = min(1, (yy - 1180) / 330); fd.line([(0, yy), (W, yy)], fill=(8, 12, 20, int(185 * u * u * (3 - 2 * u))))
     return _fade
 
-def hook_frame(hero, bgimg, t, title, parts, sub):
+def hook_frame(hero, bgimg, t, title, parts, sub, heroes2=None):
     """Same motion and layout as the race reel hook. parts = list of (text, colour, slanted)."""
     u = min(1.0, t / 1.5); bs = 1 + 0.02 * u
     bw, bh = int(W * bs), int(H * bs)
@@ -38,10 +38,18 @@ def hook_frame(hero, bgimg, t, title, parts, sub):
     ph = 2 * math.pi * t / 2.4
     sc = 1 + 0.04 * (1 - (1 - min(1.0, t / 2.0)) ** 2)
     ang = 1.0 * math.sin(ph); dx = -4.3 * math.sin(ph); dy = -12 * (1 - math.cos(ph))
-    cw = int(900 * sc); ch = int(cw * hero.height / hero.width)
-    card = rounded(hero.resize((cw, ch), Image.LANCZOS), int(40 * sc)).rotate(ang, resample=Image.BICUBIC, expand=True)
-    cx = W / 2 + dx; cy = 250 + int(900 * hero.height / hero.width) / 2 + dy
-    shadow_paste(img, card, cx - card.width / 2, cy - card.height / 2, blur=26, dy=14, alpha=170)
+    if heroes2:
+        # two cards: same zoom / tilt / sway / float, fanned out (left card behind, right card in front)
+        for k, (hc, base_ang, bx) in enumerate(((heroes2[0], 6.0, 325), (heroes2[1], -6.0, 755))):
+            cw = int(560 * sc); ch = int(cw * hc.height / hc.width)
+            card = rounded(hc.resize((cw, ch), Image.LANCZOS), int(26 * sc)).rotate(base_ang + ang * (1 if k else -1), resample=Image.BICUBIC, expand=True)
+            cx = bx + dx * (1 if k else -1); cy = 270 + int(560 * hc.height / hc.width) / 2 + dy * (1 if k else 0.7) + (0 if k else 30)
+            shadow_paste(img, card, cx - card.width / 2, cy - card.height / 2, blur=24, dy=14, alpha=170)
+    else:
+        cw = int(900 * sc); ch = int(cw * hero.height / hero.width)
+        card = rounded(hero.resize((cw, ch), Image.LANCZOS), int(40 * sc)).rotate(ang, resample=Image.BICUBIC, expand=True)
+        cx = W / 2 + dx; cy = 250 + int(900 * hero.height / hero.width) / 2 + dy
+        shadow_paste(img, card, cx - card.width / 2, cy - card.height / 2, blur=26, dy=14, alpha=170)
     img.alpha_composite(bottom_fade())
     ttl = fit_text(title, "anton", 1000, 150, WHITE, stroke=2)
     shadow_paste(img, ttl, (W - ttl.width) // 2, 1225, blur=12, dy=6, alpha=230)

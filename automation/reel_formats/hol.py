@@ -16,7 +16,7 @@ T_CD0, T_CD1, T_REV, T_WIN = 0.35, 2.6, 2.7, 3.4
 
 class HoL:
     def __init__(s):
-        s.hero = card_img(517045, hi=True); s.hbg = hook_bg(s.hero)
+        s.hero = card_img(662184, hi=True); s.hbg = hook_bg(s.hero); s.hero2 = [card_img(517045, hi=True), s.hero]
         s.bg = [dark_bg(card_img(a["pid"]), 0.5) for a, b in ROUNDS]
         s.card = {}
         for a, b in ROUNDS:
@@ -110,7 +110,7 @@ class HoL:
         return img
 
     def hook(s, t):
-        return hook_frame(s.hero, s.hbg, t, "HIGHER OR LOWER?", [("CAN YOU GO", WHITE, False), ("5/5?", GREEN, True)], "Guess which card is worth more")
+        return hook_frame(s.hero, s.hbg, t, "HIGHER OR LOWER?", [("CAN YOU GO", WHITE, False), ("5 FOR 5?", GREEN, True)], "Guess which card is worth more", heroes2=s.hero2)
 
     def frames(s):
         total = HOOK + RD * len(ROUNDS) + END

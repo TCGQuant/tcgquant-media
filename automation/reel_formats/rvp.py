@@ -20,24 +20,29 @@ def big(v): return f"${v:,.0f}" if v >= 1000 else f"${v:,.2f}"
 
 def make_slab(c, card):
     im = Image.new("RGBA", (SW, SH), (0, 0, 0, 0)); d = ImageDraw.Draw(im)
-    d.rounded_rectangle((0, 0, SW - 1, SH - 1), 22, fill=(214, 224, 236, 120), outline=(255, 255, 255, 210), width=4)
-    d.rounded_rectangle((8, 8, SW - 9, SH - 9), 17, outline=(255, 255, 255, 70), width=2)
-    # label (generic grading label, own design)
-    d.rounded_rectangle((16, 16, SW - 17, 16 + LAB), 10, fill=(14, 20, 32, 255), outline=GREEN + (255,), width=2)
-    d.rectangle((16, 30, 22, 16 + LAB - 14), fill=GREEN + (255,))
-    sz = 19
-    while d.textlength(f"{c['year']} {c['sl1']}", font=font("Bold", sz)) > SW - 170 and sz > 12: sz -= 1
-    f1 = font("Bold", sz); sz2 = 18
-    while d.textlength(c["sl2"], font=font("SemiBold", sz2)) > SW - 170 and sz2 > 12: sz2 -= 1
-    f2 = font("SemiBold", sz2)
-    d.text((36, 30), f"{c['year']} {c['sl1']}", font=f1, fill=WHITE)
-    d.text((36, 60), c["sl2"], font=f2, fill=(205, 214, 228))
-    d.text((36, 88), "GRADED", font=font("Medium", 14), fill=MUTED)
-    d.text((SW - 112, 30), "GEM MT", font=font("Bold", 18), fill=MUTED)
-    f10 = font("anton", 62); d.text((SW - 104, 44), "10", font=f10, fill=GREEN)
+    d.rounded_rectangle((0, 0, SW - 1, SH - 1), 14, fill=(228, 233, 240, 185), outline=(250, 252, 255, 235), width=4)
+    d.rounded_rectangle((7, 7, SW - 8, SH - 8), 10, outline=(255, 255, 255, 80), width=2)
+    # PSA-style label: white label, red frame, black text (plain "PSA" text, not their logo artwork)
+    RED_ = (200, 30, 42); INK = (18, 18, 20)
+    d.rectangle((14, 14, SW - 15, 16 + LAB), fill=(246, 246, 246, 255))
+    d.rectangle((20, 20, SW - 21, 10 + LAB), outline=RED_ + (255,), width=5)
+    def fit(txt, kind, sz, maxw):
+        while d.textlength(txt, font=font(kind, sz)) > maxw and sz > 11: sz -= 1
+        return font(kind, sz)
+    L = 34; R_ = SW - 34
+    l1 = f"{c['year']} {c['sl1']}"; f1 = fit(l1, "Bold", 18, SW - 170); d.text((L, 30), l1, font=f1, fill=INK)
+    nm, num = c["sl2"].rsplit(" #", 1)
+    f2 = fit(nm, "Bold", 18, SW - 200); d.text((L, 54), nm, font=f2, fill=INK)
+    fn = font("Bold", 18); t = "#" + num; d.text((R_ - d.textlength(t, font=fn), 30), t, font=fn, fill=INK)
+    fg = font("ExtraBold", 21); t = "GEM MT 10"; d.text((R_ - d.textlength(t, font=fg), 54), t, font=fg, fill=INK)
+    fp = font("ExtraBold", 22); d.text((R_ - d.textlength("PSA", font=fp), 82), "PSA", font=fp, fill=RED_)
+    # barcode-style stripes (no cert number)
+    import random; rnd = random.Random(c["pid"]); x = L
+    while x < L + 190:
+        w_ = rnd.choice((1, 1, 2, 3)); d.rectangle((x, 84, x + w_ - 1, 102), fill=INK); x += w_ + rnd.choice((1, 2, 2, 3))
     # card well
     wx, wy = (SW - CWID) // 2, 16 + LAB + 14
-    d.rounded_rectangle((wx - 6, wy - 6, wx + CWID + 5, wy + CHT + 5), 14, fill=(232, 238, 246, 150))
+    d.rounded_rectangle((wx - 7, wy - 7, wx + CWID + 6, wy + CHT + 6), 8, fill=(240, 243, 248, 200), outline=(255, 255, 255, 160), width=2)
     im.alpha_composite(card, (wx, wy))
     # glare stripe
     gl = Image.new("RGBA", (SW, SH), (0, 0, 0, 0)); gd = ImageDraw.Draw(gl)
@@ -138,7 +143,7 @@ class RVP:
         return img
 
     def hook(s, t):
-        return hook_frame(s.hero, s.hbg, t, "RAW vs PSA 10", [(f"${round(CARDS_[-1]['raw']):,}", WHITE, False), ("→", GREEN, False), ("???", GREEN, True)], "Wait for the last one...")
+        return hook_frame(s.hero, s.hbg, t, "RAW vs PSA 10", [(f"${round(CARDS_[-1]['raw']):,}", WHITE, False), ("→", GREEN, False), (big(CARDS_[-1]["psa"]), GREEN, True)], "Wait for the last one...")
 
     def frames(s):
         durs = [SEG] * (len(CARDS_) - 1) + [FIN]; starts = np.cumsum([0] + durs)
