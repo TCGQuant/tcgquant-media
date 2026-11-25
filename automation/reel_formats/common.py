@@ -12,9 +12,11 @@ def card_img(pid, hi=False):
     f = CARDS + f"{pid}_hi.jpg"
     return Image.open(f if hi and os.path.exists(f) else CARDS + f"{pid}.jpg").convert("RGB")
 
-def hook_bg(hero):
-    hb = cover_crop(hero.crop((int(hero.width * 0.14), int(hero.height * 0.07), int(hero.width * 0.86), int(hero.height * 0.40))), W, H, (0.5, 0.4)).filter(ImageFilter.GaussianBlur(5))
-    return ImageEnhance.Brightness(ImageEnhance.Color(hb).enhance(1.15)).enhance(1.1).convert("RGBA")
+def hook_bg(hero, box=(0.14, 0.07, 0.86, 0.40), focus=(0.5, 0.4), contrast=1.0, color=1.15):
+    hb = cover_crop(hero.crop((int(hero.width * box[0]), int(hero.height * box[1]), int(hero.width * box[2]), int(hero.height * box[3]))), W, H, focus).filter(ImageFilter.GaussianBlur(5))
+    hb = ImageEnhance.Color(hb).enhance(color)
+    if contrast != 1.0: hb = ImageEnhance.Contrast(hb).enhance(contrast)
+    return ImageEnhance.Brightness(hb).enhance(1.1).convert("RGBA")
 
 def dark_bg(hero, bright=0.42):
     bg = cover_crop(hero.crop((40 * hero.width // 1000, 90 * hero.width // 1000, hero.width - 40 * hero.width // 1000, int(hero.height * 0.55))), W, H, (0.5, 0.35)).filter(ImageFilter.GaussianBlur(26))

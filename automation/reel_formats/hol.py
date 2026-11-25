@@ -16,7 +16,7 @@ T_CD0, T_CD1, T_REV, T_WIN = 0.35, 2.6, 2.7, 3.4
 
 class HoL:
     def __init__(s):
-        s.hero = card_img(662184, hi=True); s.hbg = hook_bg(s.hero); s.hero2 = [card_img(517045, hi=True), s.hero]
+        s.hero = card_img(662184, hi=True); s.hbg = hook_bg(s.hero, box=(0.33, 0.20, 0.87, 0.85), focus=(0.5, 0.5), contrast=1.3, color=1.3); s.hero2 = [card_img(517045, hi=True), s.hero]
         s.bg = [dark_bg(card_img(a["pid"]), 0.5) for a, b in ROUNDS]
         s.card = {}
         for a, b in ROUNDS:
