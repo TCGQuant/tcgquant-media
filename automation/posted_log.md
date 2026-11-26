@@ -8,4 +8,4 @@
 2026-11-26 | card | phf-dialga-ex-122
 2026-11-26 | value | op11-bb
 2026-11-26 | hottake | op13-385
-2026-11-26 | engage | es-vs-brs-bb
+2026-11-26 | ranking | etb-1y-gainers

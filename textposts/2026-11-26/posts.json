@@ -44,17 +44,14 @@
   "status": "pending"
  },
  {
-  "slot": "engage",
+  "slot": "ranking",
   "time": "23:00",
   "tag": "Pokemon Threads",
   "img": null,
-  "poll": [
-   "Evolving Skies",
-   "Brilliant Stars"
-  ],
-  "key": "es-vs-brs-bb",
-  "x": "12 months of two Sword & Shield booster boxes:\n\nEvolving Skies: $2,548.74 → $2,194.68 (-13.9%)\nBrilliant Stars: $417.22 → $561.84 (+34.7%)\n\nWhich would you rather hold for the next 5 years? #PokemonTCG",
-  "threads": "12 months of two Sword & Shield booster boxes:\n\nEvolving Skies: $2,548.74 → $2,194.68 (-13.9%)\nBrilliant Stars: $417.22 → $561.84 (+34.7%)\n\nWhich would you rather hold for the next 5 years: Evolving Skies or Brilliant Stars? 👇 #PokemonTCG",
+  "poll": null,
+  "key": "etb-1y-gainers",
+  "x": "Best-performing standard Pokemon ETBs over the past 12 months (TCGplayer market):\n\nBlack Bolt: $81.53 → $148.94 (+83%)\nWhite Flare: $78.85 → $137.18 (+74%)\nPokemon GO: $100.92 → $171.06 (+70%)\nPaldean Fates: $268.95 → $426.20 (+58%)\n\nTwo released in July 2025. #PokemonTCG",
+  "threads": null,
   "status": "pending"
  }
 ]

@@ -17,6 +17,8 @@ Upload-Post profile: `TCGQuant`. Platforms: `["x", "threads"]`. Threads topic ta
 `Pokemon Threads` for Pokemon posts, `One Piece` for One Piece posts.
 
 ## Content rules (all of them, every post)
+- **No polls and no engagement-bait questions** (Grayson, Nov 26, 2026: with only a few followers nobody answers them). Every post must be
+  value-add content that earns followers: a useful number, comparison or ranking someone would want to save or share.
 - **Objective data only**, except the hot-take slot, which is Grayson's own stated opinion (see hot_takes.md).
 - Say "most valuable", never "most expensive".
 - Never say or imply that prices come from different sources. Price wording: "TCGplayer market" or just the price.
@@ -35,7 +37,7 @@ Upload-Post profile: `TCGQuant`. Platforms: `["x", "threads"]`. Threads topic ta
 | 5 PM | card | Card stat: PSA 10 pop / gem rate from CARD_POPS, or a card's 12-month climb/crash | **always** a card photo card |
 | 7 PM | value | Price vs MSRP, price a year ago vs now, or pack EV vs pack price | product photo on the days the mover has none |
 | 9 PM | hottake | Grayson's hot take (hot_takes.md), paired with one current number | none |
-| 11 PM | engage | Data-backed question. On X use a poll: `xPollOptions` (2 to 4), `xPollDuration` 1440; Threads gets the question as text (`threadsTitle`) | none |
+| 11 PM | ranking | Ranked data list: top 3 to 5 products/cards by one stat (1-year gain, price vs MSRP, gem rate, EV per pack...), each with before → after or the number, plus one takeaway line. **No polls, no questions to the audience.** | none |
 
 Image rule: exactly 2 images a day = 40%. The card post always has one; the second goes to the mover (chart) or the
 value post (photo), alternating day to day (check yesterday's posts.json). Everything else is text only.
@@ -69,8 +71,8 @@ value post (photo), alternating day to day (check yesterday's posts.json). Every
    - `photo_card(img, out, headline, stat, sub)`: e.g. `("HIDDEN FATES UPC", "$99.99 → $1,450", "2019 MSRP vs TCGplayer market today")`.
    Look at every image before saving it to the repo.
 6. Write `textposts/YYYY-MM-DD/posts.json`: a list of 5 objects
-   `{"slot":"mover|card|value|hottake|engage", "time":"15:00|17:00|19:00|21:00|23:00", "x": "...", "threads": "... (optional, else same as x)",
-     "tag": "Pokemon Threads|One Piece", "img": "file.jpg or null", "poll": ["..",".."] or null, "key": "short product/card id for the log",
+   `{"slot":"mover|card|value|hottake|ranking", "time":"15:00|17:00|19:00|21:00|23:00", "x": "...", "threads": "... (optional, else same as x)",
+     "tag": "Pokemon Threads|One Piece", "img": "file.jpg or null", "poll": null (polls are retired), "key": "short product/card id for the log",
      "status": "pending"}`.
    Check every X text is 280 or less (emoji = 2).
 7. Append the five keys to `automation/posted_log.md` (date, slot, key). Mark the used hot take in hot_takes.md (`used: YYYY-MM-DD`).
@@ -82,7 +84,7 @@ value post (photo), alternating day to day (check yesterday's posts.json). Every
 3. Publish now with Upload-Post (`user: "TCGQuant"`, `platforms: ["x","threads"]`, `confirmed: true`; these are pre-approved):
    - with an image: `upload_photos` with the raw.githubusercontent URL; text only: `upload_text`.
    - `title` = x text; `platformOptions.threadsTitle` = threads text when different; `platformOptions.threadsTopicTag` = tag;
-     polls: `xPollOptions` + `xPollDuration: 1440`.
+     Never send polls (`xPollOptions`), even if an old posts.json has a `poll` field.
 4. Poll `get_status` until done. If X says the daily cap is reached, post to Threads only and note it in posts.json.
    If a platform fails for another reason, `retry_post` once.
 5. Set the entry's `status` to `posted` (add the post URLs), commit and push.
