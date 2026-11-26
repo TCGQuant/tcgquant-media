@@ -8,7 +8,11 @@
   "key": "perfect-order-bundle",
   "threads": null,
   "x": "Perfect Order Booster Bundles fell 20.5% this week, from $37.76 to $30.01 TCGplayer market.\n\nThat's the biggest weekly drop of any sealed product we track, and it now sits just 7 cents above its $29.94 MSRP. #PokemonTCG",
-  "status": "pending"
+  "status": "posted",
+  "urls": {
+   "x": "https://x.com/GetTCGQuant/status/2126074118491529589",
+   "threads": "https://www.threads.com/@tcgquant/post/DgOIcKGjHDk"
+  }
  },
  {
   "slot": "card",
