@@ -1,0 +1,60 @@
+[
+ {
+  "slot": "mover",
+  "time": "15:00",
+  "tag": "Pokemon Threads",
+  "img": null,
+  "poll": null,
+  "key": "perfect-order-bundle",
+  "threads": null,
+  "x": "Perfect Order Booster Bundles fell 20.5% this week, from $37.76 to $30.01 TCGplayer market.\n\nThat's the biggest weekly drop of any sealed product we track, and it now sits just 7 cents above its $29.94 MSRP. #PokemonTCG",
+  "status": "pending"
+ },
+ {
+  "slot": "card",
+  "time": "17:00",
+  "tag": "Pokemon Threads",
+  "img": "2-dialga.jpg",
+  "poll": null,
+  "key": "phf-dialga-ex-122",
+  "threads": null,
+  "x": "Phantom Forces' Dialga EX secret rare (122/119) is one of the hardest Pokemon cards to grade.\n\n3,332 graded by PSA. Only 55 tens: a 1.7% gem rate. Eight times as many land at PSA 9 (441).\n\nRaw: $1,053.88 #PokemonTCG",
+  "status": "pending"
+ },
+ {
+  "slot": "value",
+  "time": "19:00",
+  "tag": "One Piece",
+  "img": "3-op11.jpg",
+  "poll": null,
+  "key": "op11-bb",
+  "threads": null,
+  "x": "A year ago, an OP-11 A Fist of Divine Speed booster box was $139.10 TCGplayer market, close to its $120 MSRP.\n\nToday it's $529.10: up 280% in 12 months, the biggest 1-year gain of any One Piece box we track. #OnePieceTCG",
+  "status": "pending"
+ },
+ {
+  "slot": "hottake",
+  "time": "21:00",
+  "tag": "One Piece",
+  "img": null,
+  "poll": null,
+  "key": "op13-385",
+  "threads": null,
+  "x": "OP-13 booster boxes are $389.30 today, down from a $609.55 peak in May.\n\nHot take: OP-13 looks even better at this price. The set hasn't changed, and it still holds iconic cards people will want to chase for years to come. #OnePieceTCG",
+  "status": "pending"
+ },
+ {
+  "slot": "engage",
+  "time": "23:00",
+  "tag": "Pokemon Threads",
+  "img": null,
+  "poll": [
+   "Evolving Skies",
+   "Brilliant Stars"
+  ],
+  "key": "es-vs-brs-bb",
+  "x": "12 months of two Sword & Shield booster boxes:\n\nEvolving Skies: $2,548.74 → $2,194.68 (-13.9%)\nBrilliant Stars: $417.22 → $561.84 (+34.7%)\n\nWhich would you rather hold for the next 5 years? #PokemonTCG",
+  "threads": "12 months of two Sword & Shield booster boxes:\n\nEvolving Skies: $2,548.74 → $2,194.68 (-13.9%)\nBrilliant Stars: $417.22 → $561.84 (+34.7%)\n\nWhich would you rather hold for the next 5 years: Evolving Skies or Brilliant Stars? 👇 #PokemonTCG",
+  "status": "pending"
+ }
+]
