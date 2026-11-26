@@ -1,0 +1,82 @@
+[
+ {
+  "code": "OP-11",
+  "name": "A FIST OF DIVINE SPEED",
+  "pid": 620180,
+  "dec2025": 191.23,
+  "nov2026": 525.5,
+  "pct": 174.8
+ },
+ {
+  "code": "OP-12",
+  "name": "LEGACY OF THE MASTER",
+  "pid": 628346,
+  "dec2025": 111.19,
+  "nov2026": 291.04,
+  "pct": 161.8
+ },
+ {
+  "code": "OP-10",
+  "name": "ROYAL BLOOD",
+  "pid": 586671,
+  "dec2025": 116.06,
+  "nov2026": 244.95,
+  "pct": 111.1
+ },
+ {
+  "code": "OP-06",
+  "name": "WINGS OF THE CAPTAIN",
+  "pid": 515080,
+  "dec2025": 194.06,
+  "nov2026": 400.9,
+  "pct": 106.6
+ },
+ {
+  "code": "OP-08",
+  "name": "TWO LEGENDS",
+  "pid": 542504,
+  "dec2025": 121.8,
+  "nov2026": 242.17,
+  "pct": 98.8
+ },
+ {
+  "code": "OP-02",
+  "name": "PARAMOUNT WAR",
+  "pid": 455866,
+  "dec2025": 271.64,
+  "nov2026": 504.78,
+  "pct": 85.8
+ },
+ {
+  "code": "OP-04",
+  "name": "KINGDOMS OF INTRIGUE",
+  "pid": 485833,
+  "dec2025": 273.73,
+  "nov2026": 490.56,
+  "pct": 79.2
+ },
+ {
+  "code": "OP-07",
+  "name": "500 YEARS IN THE FUTURE",
+  "pid": 532106,
+  "dec2025": 196.23,
+  "nov2026": 324.88,
+  "pct": 65.6
+ },
+ {
+  "code": "OP-09",
+  "name": "EMPERORS IN THE NEW WORLD",
+  "pid": 563834,
+  "dec2025": 391.25,
+  "nov2026": 624.04,
+  "pct": 59.5
+ },
+ {
+  "code": "OP-13",
+  "name": "CARRYING ON HIS WILL",
+  "pid": 628352,
+  "dec2025": 280.15,
+  "nov2026": 390.46,
+  "pct": 39.4
+ }
+]
