@@ -53,7 +53,11 @@
   "key": "op13-385",
   "threads": null,
   "x": "OP-13 booster boxes are $389.30 today, down from a $609.55 peak in May.\n\nHot take: OP-13 looks even better at this price. The set hasn't changed, and it still holds iconic cards people will want to chase for years to come. #OnePieceTCG",
-  "status": "pending"
+  "status": "posted",
+  "urls": {
+   "x": "https://x.com/GetTCGQuant/status/2126164678053085413",
+   "threads": "https://www.threads.com/@tcgquant/post/DgOxn1tjI3a"
+  }
  },
  {
   "slot": "ranking",
