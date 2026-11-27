@@ -1,0 +1,72 @@
+[
+ {
+  "name": "PALDEA EVOLVED",
+  "pid": 493975,
+  "dec2025": 351.04,
+  "nov2026": 471.03,
+  "pct": 34.2
+ },
+ {
+  "name": "SCARLET & VIOLET",
+  "pid": 476452,
+  "dec2025": 218.29,
+  "nov2026": 291.19,
+  "pct": 33.4
+ },
+ {
+  "name": "OBSIDIAN FLAMES",
+  "pid": 501257,
+  "dec2025": 297.37,
+  "nov2026": 378.94,
+  "pct": 27.4
+ },
+ {
+  "name": "STELLAR CROWN",
+  "pid": 557354,
+  "dec2025": 250.54,
+  "nov2026": 308.24,
+  "pct": 23.0
+ },
+ {
+  "name": "TEMPORAL FORCES",
+  "pid": 536225,
+  "dec2025": 270.53,
+  "nov2026": 323.68,
+  "pct": 19.6
+ },
+ {
+  "name": "PARADOX RIFT",
+  "pid": 512821,
+  "dec2025": 237.62,
+  "nov2026": 277.46,
+  "pct": 16.8
+ },
+ {
+  "name": "SURGING SPARKS",
+  "pid": 565606,
+  "dec2025": 253.33,
+  "nov2026": 294.26,
+  "pct": 16.2
+ },
+ {
+  "name": "TWILIGHT MASQUERADE",
+  "pid": 543846,
+  "dec2025": 293.65,
+  "nov2026": 324.93,
+  "pct": 10.7
+ },
+ {
+  "name": "DESTINED RIVALS",
+  "pid": 624679,
+  "dec2025": 405.23,
+  "nov2026": 386.4,
+  "pct": -4.6
+ },
+ {
+  "name": "JOURNEY TOGETHER",
+  "pid": 610931,
+  "dec2025": 221.33,
+  "nov2026": 198.76,
+  "pct": -10.2
+ }
+]
