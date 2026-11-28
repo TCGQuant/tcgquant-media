@@ -16,7 +16,7 @@ New takes from his daily answers are added at the top.
 - [grading-pops] Rising grading pops are good for sealed: it means product is being opened. | data: a set's PSA submissions this month
 - [low-ev] Low pack EV means less opening, which is good for sealed, but sets with no big chase get opened less in future too. | data: a set's EV per pack vs pack price
 - [swsh-hedge] SWSH sealed is a decent hedge vs heavily printed new sets, but it needs 5+ years of patience. | data: a SWSH box 12-month change
-- [cooling] The market is cooling (Nov 2026). It's hard for anything to hold momentum; no need to rush. Look for deals at 80–90% of market and on eBay auctions. | data: count of products down over 4 weeks
+- [cooling] The market is cooling (Nov 2026). It's hard for anything to hold momentum; no need to rush. Look for deals at 80–90% of market and on eBay auctions. | data: count of products down over 4 weeks | used: 2026-11-27
 - [evs] Evolving Skies is by far the best set of Sword & Shield (thesis 9/10), and the most opened Pokemon set ever. | data: ES box price now vs 6 months ago
 - [fusion] Fusion Strike is top-heavy (Gengar VMAX), thesis 7/10. "I don't hate buying Fusion Strike at a percentage of market." | data: FS box price, Gengar VMAX price
 - [brilliant] Brilliant Stars is his largest booster box position and a 5+ year hold. Its weakness: no massive chase (Charizard V only +23% in 4 years). Trainer Gallery cards did best. | data: BRS box price
