@@ -7,12 +7,15 @@ PATCH = {      # source-coord polygons forced into product (pale art that touche
     "501257": [[(262, 229), (1100, 227), (1100, 470), (262, 470)],          # lid rectangle
                [(990, 440), (1099, 440), (1082, 1325), (990, 1325)]],     # right side panel
     "476452": [[(1060, 940), (1101, 940), (1099, 1040), (1060, 1040)]],    # right side panel
-    "610931": [[(1000, 690), (1078, 690), (1073, 812), (1000, 812)]],      # right pack edge
+    "610931": [[(1000, 690), (1078, 690), (1077, 780), (1076, 860), (1073, 940), (1076, 975), (1090, 1035), (1000, 1035)]],  # right edge (white print beside the bubble)
+    "493975": [[(175, 1067), (306, 1199), (330, 1199), (440, 1183), (600, 1161), (800, 1128), (880, 1119),
+                (955, 1105), (1030, 1103), (1041, 1100), (1041, 1050)]],  # white base strip along the bottom
     "512821": [[(505, 324), (662, 324), (662, 420), (505, 420)]],          # lid top-left corner
 }
 CLIP = {}      # source-coord polygons forced to background
 LAST = {}
 KS = 5
+ERODE = 1
 TIGHT = 238
 WIDE = 9      # white areas narrower than this are edge halo, wider ones are real white print
 WIN = 25      # median window (px) for straightening the bottom and side outlines
@@ -101,6 +104,7 @@ def cutout(path, ss=4, cache=True):
     if cache and os.path.exists(out_path) and os.path.getmtime(out_path) > max(os.path.getmtime(path), os.path.getmtime(__file__)):
         return Image.open(out_path).convert("RGBA")
     a, m, P = mask(path); h, w = m.shape
+    m = cv2.erode(m, np.ones((3, 3), np.uint8), iterations=ERODE)   # drop the 1px light rim where the edge blends into the backdrop
     f = cv2.GaussianBlur(m.astype(np.float32) / 255, (0, 0), 1.0)
     big = (cv2.resize(f, (w * ss, h * ss), interpolation=cv2.INTER_CUBIC) > 0.5).astype(np.float32)
     alpha = cv2.resize(big, (w, h), interpolation=cv2.INTER_AREA)
