@@ -1,144 +1,111 @@
-"""Product cutouts v4 (white-background product photos).
-- background = near-white connected to the image border (flood fill)
-- AI matte (rembg isnet) restores pale artwork the flood fill ate, but AI pixels that are pale/grey
-  (floor shadows and reflections under the box) are rejected
-- largest object kept, holes filled, optional manual patch polygons per image
-- edge: hard mask smoothed at 4x, then a colour-based alpha on the outer 3px band removes the white halo,
-  and edge colours are un-mixed from white."""
+"""Box cutout v5: background = near-pure white connected to the border (box white print kept).
+Per-image PATCH polygons force product in, CLIP polygons force background (shadows)."""
 import os, numpy as np, cv2
 from PIL import Image
-
-_sess = None
-def _ai_alpha(im):
-    global _sess
-    from rembg import new_session, remove
-    if _sess is None: _sess = new_session("isnet-general-use")
-    return np.array(remove(im, session=_sess, only_mask=True).convert("L"))
-
-LAST = {}
-KEEP = {"493975": [[(900, 841), (1043, 841), (1043, 1000), (900, 1000)]]}   # protect from the white-pocket drop (tray rim is white print)
-PATCH = {
-    "501257": [[(262, 229), (1100, 227), (1100, 470), (262, 470)],          # lid rectangle (pale lightning art)
-               [(990, 440), (1099, 440), (1082, 1325), (990, 1325)],      # right side panel (pale art)
-               [(17, 1300), (72, 1300), (72, 1363), (17, 1355)]],         # tray bottom-left corner (glare)
-    "476452": [[(1060, 940), (1101, 940), (1099, 1040), (1060, 1040)]],    # right side panel (pale art)
-    "610931": [[(1000, 690), (1078, 690), (1073, 812), (1000, 812)]],      # right pack edge (pale art)
-    "512821": [[(505, 324), (662, 324), (662, 420), (505, 420)]],          # lid top-left corner (pale art)
+TH = {}        # per-image bg threshold override
+PATCH = {      # source-coord polygons forced into product (pale art that touches the white background)
+    "501257": [[(262, 229), (1100, 227), (1100, 470), (262, 470)],          # lid rectangle
+               [(990, 440), (1099, 440), (1082, 1325), (990, 1325)]],     # right side panel
+    "476452": [[(1060, 940), (1101, 940), (1099, 1040), (1060, 1040)]],    # right side panel
+    "610931": [[(1000, 690), (1078, 690), (1073, 812), (1000, 812)]],      # right pack edge
+    "512821": [[(505, 324), (662, 324), (662, 420), (505, 420)]],          # lid top-left corner
 }
-BOX = False
-STRAIGHT = False   # display boxes: body and lid panel are convex, so fill pale-art bites along their straight edges
-
-def straighten_sides(m, mn, tol=3):
-    """Box body sides are straight lines. Fit each side on the rows where it sits at its outer edge and
-    fill rows where pale art next to the background was bitten out."""
-    ys = np.nonzero(m.any(1))[0]
-    L = np.full(m.shape[0], -1); R = np.full(m.shape[0], -1)
-    for y in ys:
-        xs = np.nonzero(m[y])[0]; L[y] = xs.min(); R[y] = xs.max()
-    width = R - L
-    full = width[ys].max()
-    body = ys[width[ys] >= 0.85 * full]
-    if len(body) < 50: return m
-    body = body[(body >= body.min()) & (body <= body.max())]
-    out = m.copy()
-    for side, sign in ((L, 1), (R, -1)):
-        yb = body; xb = side[yb].astype(float)
-        # robust line fit: iterate, keeping rows on the outer side of the current fit
-        keep = np.ones(len(yb), bool)
-        for _ in range(4):
-            a, b = np.polyfit(yb[keep], xb[keep], 1)
-            resid = (xb - (a * yb + b)) * sign   # >0 means bitten inward
-            keep = resid <= np.percentile(resid, 60)
-        fit = a * yb + b
-        resid = (xb - fit) * sign
-        bit = (resid > tol) & (resid < 0.25 * full)
-        # only fill bites enclosed above and below by straight edge (corners at the body ends are real shape)
-        i = 0; n = len(yb); margin = max(3, int(0.04 * n))
-        while i < n:
-            if not bit[i]: i += 1; continue
-            j = i
-            while j < n and bit[j]: j += 1
-            if i > margin and j < n - margin and (j - i) < 0.2 * n:
-                for k in range(i, j):
-                    y = yb[k]; x0, x1 = sorted((int(round(fit[k])), int(xb[k])))
-                    seg = mn[y, x0:x1 + 1] <= 250
-                    out[y, x0:x1 + 1][seg] = 255
-            i = j
-    return out
-
-def box_hulls(m):
-    ys, xs = np.nonzero(m); y0, y1 = ys.min(), ys.max(); H = y1 - y0 + 1
-    rows = np.arange(y0, y1 + 1)
-    width = np.array([(np.nonzero(m[y])[0].max() - np.nonzero(m[y])[0].min()) if m[y].any() else 0 for y in rows])
-    full = width.max()
-    # body starts where the silhouette reaches (nearly) its full width
-    body_top = rows[np.argmax(width >= 0.9 * full)]
-    out = m.copy()
-    pts = np.column_stack(np.nonzero(m[body_top:]))[:, ::-1] + [0, body_top]
-    cv2.fillConvexPoly(out, cv2.convexHull(pts.astype(np.int32)), 255)
-    # lid panel: rows above the body whose width is close to the lid's typical width
-    upper = width[: body_top - y0]
-    if len(upper) > 20:
-        lid_w = np.median(upper[len(upper) // 2:])
-        lid_rows = rows[: body_top - y0][upper >= 0.85 * lid_w]
-        if len(lid_rows) > 10:
-            lt = lid_rows.min()
-            pts = np.column_stack(np.nonzero(m[lt:body_top]))[:, ::-1] + [0, lt]
-            cv2.fillConvexPoly(out, cv2.convexHull(pts.astype(np.int32)), 255)
-    return out   # name -> list of polygons (image coords, before padding) to force into the product
-
-def cutout(path, thr=236, chroma=14, ss=4, cache=True):
-    name = os.path.basename(path).split(".")[0]
-    out_path = os.path.splitext(path)[0] + "_cut4.png"
-    if cache and os.path.exists(out_path) and os.path.getmtime(out_path) > os.path.getmtime(__file__): return Image.open(out_path)
-    im0 = Image.open(path).convert("RGB"); P0 = 12
-    im = Image.new("RGB", (im0.width + 2 * P0, im0.height + 2 * P0), (255, 255, 255)); im.paste(im0, (P0, P0))
+CLIP = {}      # source-coord polygons forced to background
+LAST = {}
+KS = 5
+TIGHT = 238
+WIDE = 9      # white areas narrower than this are edge halo, wider ones are real white print
+WIN = 25      # median window (px) for straightening the bottom and side outlines
+BAND = 30
+def mask(path, th=250, chroma=14):
+    name = os.path.splitext(os.path.basename(path))[0]; th = TH.get(name, th)
+    im0 = Image.open(path).convert("RGB"); P = 12
+    im = Image.new("RGB", (im0.width + 2 * P, im0.height + 2 * P), (255, 255, 255)); im.paste(im0, (P, P))
     a = np.array(im).astype(np.int16); h, w = a.shape[:2]
     mn = a.min(2); ch = a.max(2) - mn
-    white = ((mn >= thr) & (ch <= chroma)).astype(np.uint8)
-    n, lab = cv2.connectedComponents(white, connectivity=4)
-    border = set(np.unique(np.r_[lab[0], lab[-1], lab[:, 0], lab[:, -1]])) - {0}
-    bg = np.isin(lab, list(border))
-    fg = ~bg
-    ai = _ai_alpha(im) > 160
-    pale = (mn >= 200) & (ch <= 22)
-    m = (fg | (ai & ~pale)).astype(np.uint8) * 255
-    for poly in PATCH.get(name, []):
-        cv2.fillPoly(m, [np.array(poly, np.int32) + P0], 255)
-    # drop near-white pockets that sit on the silhouette edge behind a faint line (e.g. the wedge where the body meets the tray)
-    keep = np.zeros_like(m)
-    for poly in PATCH.get(name, []) + KEEP.get(name, []):
-        cv2.fillPoly(keep, [np.array(poly, np.int32) + P0], 255)
-    wht = ((mn >= 244) & (ch <= 12) & (m > 0) & (keep == 0)).astype(np.uint8)
-    ext = cv2.dilate((m == 0).astype(np.uint8), np.ones((7, 7), np.uint8))
-    nw, lw, sw, _ = cv2.connectedComponentsWithStats(wht, connectivity=8)
-    touch = np.unique(lw[(ext > 0) & (wht > 0)])
-    drop = np.isin(lw, [t for t in touch if t and sw[t, 4] >= 15])
-    LAST["drop"] = drop[P0:-P0, P0:-P0]
-    m[drop] = 0
-    k3 = np.ones((3, 3), np.uint8)
-    m = cv2.morphologyEx(m, cv2.MORPH_OPEN, k3, iterations=2)
+    def flood(t):
+        white = ((mn >= t) & (ch <= chroma)).astype(np.uint8)
+        n, lab = cv2.connectedComponents(white, connectivity=4)
+        border = set(np.unique(np.r_[lab[0], lab[-1], lab[:, 0], lab[:, -1]])) - {0}
+        return (~np.isin(lab, list(border))).astype(np.uint8) * 255
+    tight = flood(TIGHT)            # coloured print, edge halo excluded
+    loose = flood(th)               # also takes the box's white print (base strip, gussets, rims)
+    extra = loose & ~cv2.dilate(tight, np.ones((7, 7), np.uint8))
+    extra = cv2.morphologyEx(extra, cv2.MORPH_OPEN, cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (WIDE, WIDE)))
+    extra = cv2.dilate(extra, np.ones((9, 9), np.uint8)) & loose   # reconnect wide white areas to the print
+    m = tight | extra
+    for poly in PATCH.get(name, []): cv2.fillPoly(m, [np.array(poly, np.int32) + P], 255)
+    for poly in CLIP.get(name, []): cv2.fillPoly(m, [np.array(poly, np.int32) + P], 0)
+    k = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (KS, KS))
+    m = cv2.morphologyEx(m, cv2.MORPH_OPEN, k)      # knock off JPEG-noise spikes along white edges
+    m = cv2.morphologyEx(m, cv2.MORPH_CLOSE, k)     # and fill the notches between them
     nn, ll, st, _ = cv2.connectedComponentsWithStats(m)
     m = np.where(ll == 1 + np.argmax(st[1:, cv2.CC_STAT_AREA]), 255, 0).astype(np.uint8)
     ff = m.copy(); cv2.floodFill(ff, np.zeros((h + 2, w + 2), np.uint8), (0, 0), 255); m = m | (255 - ff)
-    if BOX: m = box_hulls(m)
-    if STRAIGHT: m = straighten_sides(m, mn)
-    # smooth the silhouette: blur, upsample, threshold, area-downsample
-    f = cv2.GaussianBlur(m.astype(np.float32) / 255, (0, 0), 1.2)
+    m = straighten(m)
+    return a, m, P
+def _med(v, win):
+    from scipy.ndimage import median_filter
+    return median_filter(v, size=win, mode="nearest")
+def _fit(v):
+    """Piecewise-straight version of a profile: split at steps, fit 1 or 2 lines per run,
+    keep the median value wherever the fit strays > 5px (not actually straight there)."""
+    v = np.asarray(v, float); out = v.copy(); n = len(v)
+    cuts = [0] + [i + 1 for i in range(n - 1) if abs(v[i + 1] - v[i]) > 6] + [n]
+    for a, b in zip(cuts[:-1], cuts[1:]):
+        if b - a < 15: continue
+        t = np.arange(a, b); y = v[a:b]
+        def line(tt, yy):
+            k = np.polyfit(tt, yy, 1); return np.polyval(k, tt)
+        f1 = line(t, y); e1 = np.abs(f1 - y).mean(); best = f1
+        if e1 > 0.8 and b - a >= 40:
+            be = None
+            for j in range(a + 15, b - 15, 3):
+                f = np.r_[line(t[:j - a], y[:j - a]), line(t[j - a:], y[j - a:])]
+                e = np.abs(f - y).mean()
+                if be is None or e < be: be, bf = e, f
+            if be is not None and be < 0.6 * e1: best = bf
+        good = np.abs(best - y) <= 5
+        out[a:b] = np.where(good, best, y)
+    return out
+def straighten(m):
+    """The box's bottom and side outlines are straight; the white base strip makes them noisy.
+    Median-filter the outline profiles (keeps steps and long edges, drops JPEG-noise spikes)."""
+    h, w = m.shape; on = m > 0
+    rows = np.where(on.any(1))[0]; cols = np.where(on.any(0))[0]
+    y0, y1 = rows[0], rows[-1]; ybody = int(y0 + 0.35 * (y1 - y0))
+    out = m.copy()
+    # bottom profile
+    yb = np.full(w, -1); idx = np.arange(h)[:, None]
+    yb_raw = np.where(on.any(0), (on * idx).max(0), -1)
+    c0, c1 = cols[0], cols[-1]
+    prof = _fit(_med(yb_raw[c0:c1 + 1].astype(float), WIN))
+    for i, x in enumerate(range(c0, c1 + 1)):
+        yb = int(round(prof[i]))
+        if yb < ybody: continue
+        out[yb + 1:, x] = 0; out[max(ybody, yb - BAND):yb + 1, x] = 255
+    # side profiles, body rows only
+    for side in (0, 1):
+        xs = np.array([ (np.where(out[y] > 0)[0][0] if side == 0 else np.where(out[y] > 0)[0][-1]) if out[y].any() else -1 for y in range(h)])
+        ys = np.arange(ybody, y1 + 1); ys = ys[xs[ys] >= 0]
+        if not len(ys): continue
+        pr = _fit(_med(xs[ys].astype(float), WIN))
+        for y, xv in zip(ys, pr):
+            xv = int(round(xv))
+            if side == 0: out[y, :xv] = 0; out[y, xv:xv + BAND] = 255
+            else: out[y, xv + 1:] = 0; out[y, max(0, xv - BAND):xv + 1] = 255
+    return out
+def cutout(path, ss=4, cache=True):
+    name = os.path.splitext(os.path.basename(path))[0]
+    out_path = os.path.join(os.path.dirname(path), f"{name}_cut5.png")
+    if cache and os.path.exists(out_path) and os.path.getmtime(out_path) > max(os.path.getmtime(path), os.path.getmtime(__file__)):
+        return Image.open(out_path).convert("RGBA")
+    a, m, P = mask(path); h, w = m.shape
+    f = cv2.GaussianBlur(m.astype(np.float32) / 255, (0, 0), 1.0)
     big = (cv2.resize(f, (w * ss, h * ss), interpolation=cv2.INTER_CUBIC) > 0.5).astype(np.float32)
     alpha = cv2.resize(big, (w, h), interpolation=cv2.INTER_AREA)
-    # colour alpha on the outer band: pale pixels next to the background are mostly background
-    inside = (alpha > 0.5).astype(np.uint8)
-    dist = cv2.distanceTransform(inside, cv2.DIST_L2, 3)
-    band = (dist > 0) & (dist <= 3.0)
-    ca = np.clip((255 - mn.astype(np.float32)) / 45.0, 0, 1)
-    alpha = np.where(band, np.minimum(alpha, np.maximum(ca, (dist - 1) / 2.0)), alpha)
-    rgb = a.astype(np.float32); al = alpha[..., None]
-    edge = (alpha > 0.02) & (alpha < 0.98)
-    dec = np.clip((rgb - 255 * (1 - al)) / np.maximum(al, 0.05), 0, 255)
-    rgb[edge] = dec[edge]
-    out = np.dstack([rgb.astype(np.uint8), (np.clip(alpha, 0, 1) * 255).astype(np.uint8)])
-    LAST["alpha"] = alpha[P0:-P0, P0:-P0]
+    LAST["alpha"] = alpha[P:-P, P:-P]
+    out = np.dstack([a.astype(np.uint8), (np.clip(alpha, 0, 1) * 255).astype(np.uint8)])
     res = Image.fromarray(out, "RGBA"); res = res.crop(res.getbbox())
     if cache: res.save(out_path)
     return res
