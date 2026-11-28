@@ -95,3 +95,9 @@ value post (photo), alternating day to day (check yesterday's posts.json). Every
 - Pair each with one current number from the data. If current data clearly contradicts the take (e.g. a box he called
   "near a bottom" has dropped another 20%), skip it and pick another.
 - Prefer takes not used in the last 21 days. When fewer than 5 unused takes remain, mention it in the build-run summary.
+
+## Higher or Lower: keep it unpredictable (Grayson, Nov 27 2026)
+- Background card is the winner about 50% of rounds and the loser the other 50%.
+- Winning card is on the left about 50% of rounds and on the right the other 50%.
+- No pattern runs the same way more than twice in a row, and the background choice is independent of the winner's side.
+- Build every episode's rounds with `plan_hol(pairs)` in reel_formats/common.py (pairs given as (winner, loser)).

@@ -95,3 +95,30 @@ def encode(frames, out):
 
 def clamp01(x): return max(0.0, min(1.0, x))
 def eout(x): x = clamp01(x); return 1 - (1 - x) ** 3
+
+
+def plan_hol(pairs, seed=None):
+    """Higher or Lower: make the rounds unpredictable (Grayson, Nov 27 2026).
+    pairs: list of (winner, loser) cards in round order. Returns (rounds, bg) where
+    rounds[i] = (left, right) and bg[i] is the card used as that round's background.
+    - winner sits on the left about half the time and on the right the other half
+    - background is the winner about half the time and the loser the other half
+    - neither pattern runs the same way more than twice in a row
+    - background choice is independent of which side the winner is on
+    """
+    import random
+    rng = random.Random(seed)
+    n = len(pairs)
+    def split():
+        while True:
+            k = n // 2 + (rng.random() < 0.5 if n % 2 else 0)
+            seq = [True] * k + [False] * (n - k); rng.shuffle(seq)
+            if all(not (seq[i] == seq[i + 1] == seq[i + 2]) for i in range(n - 2)):
+                return seq
+    while True:
+        left, bgwin = split(), split()
+        if n < 4 or sum(a == b for a, b in zip(left, bgwin)) not in (0, n):   # don't let side and bg move in lockstep
+            break
+    rounds = [(w, l) if lw else (l, w) for (w, l), lw in zip(pairs, left)]
+    bg = [w if bw else l for (w, l), bw in zip(pairs, bgwin)]
+    return rounds, bg
