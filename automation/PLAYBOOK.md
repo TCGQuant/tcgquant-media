@@ -101,3 +101,7 @@ value post (photo), alternating day to day (check yesterday's posts.json). Every
 - Winning card is on the left about 50% of rounds and on the right the other 50%.
 - No pattern runs the same way more than twice in a row, and the background choice is independent of the winner's side.
 - Build every episode's rounds with `plan_hol(pairs)` in reel_formats/common.py (pairs given as (winner, loser)).
+
+## Safe area for all reels (Grayson, Nov 28 2026)
+- IG/TikTok crop roughly 100px off each side of a 1080-wide video on tall phones, and the IG buttons sit on the right edge.
+- Keep cards, slabs and key text between x ≈ 100 and x ≈ 980. Raw vs PSA 10 now uses card 340x475 at x=300 and slab 430 wide at x=765.

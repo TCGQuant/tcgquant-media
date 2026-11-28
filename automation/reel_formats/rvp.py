@@ -10,10 +10,10 @@ CARDS_ = [
     dict(pid=94683, l1="2014 POKEMON XY PHANTOM FORCES", l2="FA/GENGAR EX", num="114", name="Gengar EX (Full Art)", tag="Phantom Forces · 114/119", era="XY", year="2014", sl1="POKEMON XY PHANTOM FORCES", sl2="GENGAR EX FULL ART #114", raw=828.92, psa=73857.78, g10=86, tot=6134),
 ]
 HOOK, XF, SEG, FIN, END = 2.6, 0.35, 4.4, 6.4, 3.8
-CWID, CHT = 374, 523
-SW = 480; SH = round(1981 * SW / 1170); STOP = 395
+CWID, CHT = 340, 475
+SW = 430; SH = round(1981 * SW / 1170); STOP = 395
 CARD_TOP = STOP + round(550 * SW / 1170)
-RX, SX = 275, 805
+RX, SX = 300, 765   # kept inside the area IG/TikTok show on tall phones (they crop ~100px off each side)
 YS = 35  # text block shift for the taller slab
 sys.path.insert(0, "/home/claude/newreels/slab"); import psaslab
 
